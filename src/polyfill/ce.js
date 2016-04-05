@@ -1,4 +1,4 @@
 'use strict';
 
 import standard from './standard';
-import ce from 'document-register-elements';
+import ce from 'document-register-element';

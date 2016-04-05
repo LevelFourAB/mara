@@ -16,10 +16,18 @@ Builder.prototype.extends = function(el, proto) {
 	return this;
 };
 
-Builder.prototype.defineAttribute = function(attribute, cb) {
-	this._builder_attributes[attribute] = cb;
+Builder.prototype.defineAttribute = function(attribute, opts) {
+	if(typeof opts === 'function') {
+		opts = {
+			callback: opts
+		};
+	}
+
+	this._builder_attributes[attribute] = opts;
 	return this;
 };
+
+Builder.prototype.withAttribute = Builder.prototype.defineAttribute;
 
 Builder.prototype.onCreated = function(cb) {
 	this.createdCallback = cb;
@@ -43,7 +51,7 @@ Builder.prototype.withTemplate = function(template) {
 
 Builder.prototype.withAttributes = function() {
 	for(var i=0; i<arguments.length; i++) {
-		this._builder_attributes[arguments[i]] = undefined;
+		this._builder_attributes[arguments[i]] = {};
 	}
 	return this;
 };
@@ -51,6 +59,8 @@ Builder.prototype.withAttributes = function() {
 Builder.prototype.defineProperty = function(name, def) {
 	this._builder_properties[name] = def;
 };
+
+Builder.prototype.withProperty = Builder.prototype.defineProperty;
 
 Builder.prototype.register = function() {
 	let element = Object.create(this._builder_proto);
@@ -93,24 +103,24 @@ Builder.prototype.register = function() {
 	var attrs = this._builder_attributes;
 
 	// Setup attributes <-> properties
-	let makeProperty = function(key) {
+	let makeProperty = function(key, opts) {
 		Object.defineProperty(element, camelCase(key), {
-			get: function() { return this.getAttribute(key); },
-			set: function(value) { return this.setAttribute(key, value); }
+			get: opts.get || function() { return this.getAttribute(key); },
+			set: opts.set || function(value) { return this.setAttribute(key, value); }
 		});
 	};
 
 	for(var attr in attrs) {
 		if(attrs.hasOwnProperty(attr) && ! this._builder_properties.hasOwnProperty(attr)) {
-			makeProperty(attr);
+			makeProperty(attr, attrs[attr]);
 		}
 	}
 
 	// Setup the optional updaters
 	element.attributeChangedCallback = function(attr, oldVal, newVal) {
-		var cb = attrs[attr];
-		if(cb) {
-			cb.call(this, oldVal, newVal);
+		var opts = attrs[attr];
+		if(opts && opts.callback) {
+			opts.callback.call(this, oldVal, newVal);
 		}
 	};
 
