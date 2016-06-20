@@ -42,7 +42,7 @@ ce.define('mara-form', function(el) {
 		this.form.style.display = 'none';
 		this.form.method = this.method || 'POST';
 		this.form.action = this.action || document.location.toString();
-		this.form.enctype = this.enctype;
+		this.form.enctype = this.enctype || 'application/x-www-form-urlencoded';
 
 		var i = document.createElement('input');
 		i.setAttribute('type', 'hidden');
