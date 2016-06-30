@@ -35,7 +35,7 @@ function ajaxify(el) {
 	});
 
 	el.delegateEventListener('submit', 'form', function(e) {
-		var href= e.target.action || document.location.toString();
+		var href= makeAbsolute(e.target.getAttribute('action') || document.location.toString());
 		if(String(href).indexOf(rootUrl) !== 0) return;
 
 		e.preventDefault();
