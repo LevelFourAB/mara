@@ -367,7 +367,7 @@ ce.define('mara-radio-group', function(el) {
 		}
 	});
 
-	el.withAttributes('mara-type');
+	el.withAttributes('mara-type', 'name');
 
 	el.toData = function() {
 		var type = this.maraType || 'text';
