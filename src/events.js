@@ -6,7 +6,7 @@ import trigger from './events/trigger';
 import once from './events/once';
 
 HTMLElement.prototype.delegateEventListener = onThis(delegate);
-HTMLElement.prototype.triggerEventListener = onThis(delegate);
+HTMLElement.prototype.triggerEventListener = onThis(trigger);
 HTMLElement.prototype.addOnceEventListener = onThis(once);
 
 export default {
