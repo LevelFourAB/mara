@@ -14,9 +14,6 @@
     "jspmNodeConversion": false,
     "main": "src",
     "format": "es6",
-    "registry": "npm",
-    "directories": {
-      "dist": "src"
-    }
+    "registry": "npm"
   }
 }
