@@ -6,8 +6,8 @@ import stack from './stack';
 
 import transitions from '../transitions';
 
-ce.define('mara-dialog', function(def) {
-	def.createdCallback = function() {
+class Dialog extends ce.HTMLCustomElement {
+	init() {
 		this.delegateEventListener('click', 'button[extended-type=close], [data-type=close]', function(e, t) {
 			e.preventDefault();
 			e.stopImmediatePropagation();
@@ -19,9 +19,9 @@ ce.define('mara-dialog', function(def) {
 		this.setAttribute('tabindex', '-1');
 		this.style.pointerEvents = 'auto';
 		this.isOpen = false;
-	};
+	}
 
-	def.attachedCallback = function() {
+	connectedCallback() {
 		this._previousFocus = document.activeElement;
 
 		setTimeout(() => {
@@ -30,20 +30,20 @@ ce.define('mara-dialog', function(def) {
 				this.triggerEventListener('dialog:open');
 
 				// Find what we should focus
-				(this.query('[autofocus]') || this.query('.main') || this).focus();
+				(this.querySelector('[autofocus]') || this.querySelector('.main') || this).focus();
 			});
 
 			stack.show(this);
 
 			this.classList.add('mara-dialog-visible');
 		});
-	};
+	}
 
-	def.detachedCallback = function() {
+	disconnectedCallback() {
 		stack.hide(this);
-	};
+	}
 
-	def.removeIfVisible = function() {
+	removeIfVisible() {
 		if(! this.classList.contains('mara-dialog-visible')) return;
 
 		this.classList.remove('mara-dialog-visible');
@@ -59,9 +59,9 @@ ce.define('mara-dialog', function(def) {
 				delete this._previousFocus;
 			}
 		});
-	};
+	}
 
-	def.close = function() {
+	close() {
 		this.classList.remove('mara-dialog-visible');
 
 		this.addOnceEventListener(transitions.eventName, () => {
@@ -77,5 +77,7 @@ ce.define('mara-dialog', function(def) {
 
 			nav.go(nav.lastPage);
 		});
-	};
-});
+	}
+}
+
+ce.define('mara-dialog', Dialog);

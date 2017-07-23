@@ -14,7 +14,7 @@ rootUrl += '/';
 function go(url, source, isReload) {
 	var page = document.querySelector('mara-page');
 	if(page) {
-		history.replaceState(page.getPageState(), "", window.location);
+		history.replaceState(page.pageState, "", window.location);
 	}
 
 	history.pushState(null, "", url);
@@ -90,7 +90,7 @@ var loadHtml = function(html) {
 
 	var newPage = newDoc.querySelector('mara-page');
 	var dialog = newDoc.querySelector('mara-dialog');
-	let notification = newDoc.query('mara-notification');
+	let notification = newDoc.querySelector('mara-notification');
 
 	var url;
 	if(newPage && ! dialog) {
@@ -295,9 +295,8 @@ var performPost = function(target, method, data, form) {
 	req.send(data);
 };
 
-ce.define('mara-page', function(el) {
-
-	el.createdCallback = function() {
+class MaraPage extends ce.HTMLCustomElement {
+	init() {
 		var w = this.hasAttribute('window');
 
 		if(! w) ajaxify(this);
@@ -310,45 +309,55 @@ ce.define('mara-page', function(el) {
 		if(w) ajaxify(window.document.documentElement);
 		api.url = this.getAttribute('url');
 		container = this;
-	};
+	}
 
-	el.attachedCallback = function() {
+	get pageTitle() {
+		return this.getAttribute('page-title');
+	}
+
+	get url() {
+		return this.getAttribute('url');
+	}
+
+	connectedCallback() {
 		document.title = this.pageTitle;
-		api.lastPage = this.getAttribute('url');
-	};
+		api.lastPage = this.url;
+	}
 
-	el.withAttributes('page-title', 'url');
-
-	window.addEventListener('popstate', function() {
-		var page = document.querySelector('mara-page');
-		if(page) {
-			console.log("page state", page.getPageState());
-			history.replaceState(page.getPageState(), "", window.location);
-		}
-		navigate();
-	});
-
-	el.hasPageState = true;
-	el.addPageState = function(stateObject) {
+	addPageState(stateObject) {
 		if(! stateObject.id) {
 			stateObject.id = 'mara-' + (++this._stateUniqueId);
 		}
 
 		this._stateElements.push(stateObject);
-	};
-	el.getPageState = function() {
-		var result = {};
+	}
+
+	get pageState() {
+		const result = {};
 		this._stateElements.forEach(function(stateObject) {
-			result[stateObject.id] = stateObject.getPageState();
+			result[stateObject.id] = stateObject.pageState;
 		});
-	};
-	el.setPageState = function(state) {
+		return result;
+	}
+
+	set pageState(state) {
 		if(! state) return;
 
 		this._stateElements.forEach(function(stateObject) {
-			stateObject.setPageState(state[stateObject.id]);
+			stateObject.pageState = state[stateObject.id];
 		});
-	};
+	}
+}
+ce.define('mara-page', MaraPage);
+
+window.addEventListener('popstate', function() {
+	var page = document.querySelector('mara-page');
+	if(page) {
+		const state = page.pageState;
+		console.log("page state", state);
+		history.replaceState(state, "", window.location);
+	}
+	navigate();
 });
 
 api.go = go;

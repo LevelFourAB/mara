@@ -3,9 +3,8 @@
 import ce from '../ce';
 import transitions from '../transitions';
 
-ce.define('mara-notification', function(def) {
-	def.attachedCallback = function() {
-
+class Notification extends ce.HTMLCustomElement {
+	connectedCallback() {
 		let show = () => {
 			this.classList.add('active');
 
@@ -23,13 +22,15 @@ ce.define('mara-notification', function(def) {
 		} else {
 			show();
 		}
-	};
+	}
 
-	def.hide = function() {
+	hide() {
 		this.addOnceEventListener(transitions.eventName, () => {
 			this.remove();
 		});
 
 		this.classList.remove('active');
-	};
-});
+	}
+};
+
+ce.define('mara-notification', Notification);

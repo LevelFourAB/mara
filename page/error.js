@@ -3,8 +3,8 @@
 import nav from './nav';
 import ce from '../ce';
 
-ce.define('mara-page-load-error', function(def) {
-	def.createdCallback = function() {
+class PageLoadError extends ce.HTMLCustomElement {
+	init() {
 		this.navigateStarted = this.navigateStarted.bind(this);
 		this.navigateError = this.navigateError.bind(this);
 
@@ -19,23 +19,25 @@ ce.define('mara-page-load-error', function(def) {
 					break;
 			}
 		});
-	};
+	}
 
-	def.attachedCallback = function() {
+	connectedCallback() {
 		document.addEventListener('navigateStarted', this.navigateStarted);
 		document.addEventListener('navigateError', this.navigateError);
-	};
+	}
 
-	def.detachedCallback = function() {
+	disconnectedCallback() {
 		document.removeEventListener('navigateStarted', this.navigateStarted);
 		document.removeEventListener('navigateError', this.navigateError);
-	};
+	}
 
-	def.navigateStarted = function() {
+	navigateStarted() {
 		this.classList.remove('active');
-	};
+	}
 
-	def.navigateError = function(e) {
+	navigateError() {
 		this.classList.add('active');
-	};
-});
+	}
+}
+
+ce.define('mara-page-load-error', PageLoadError);

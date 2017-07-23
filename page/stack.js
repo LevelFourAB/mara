@@ -1,6 +1,7 @@
 'use strict';
 
-import ally from 'ally.js';
+import maintainHidden from 'ally.js/maintain/hidden';
+import maintainDisabled from 'ally.js/maintain/disabled';
 
 let overlay;
 let overlayClick;
@@ -22,11 +23,11 @@ function recreate() {
 		document.documentElement.classList.add('mara-no-scroll');
 
 		const elements = active.map(item => item.element);
-		hidden = ally.maintain.hidden({
+		hidden = maintainHidden({
 			filter: top.element
 		});
 
-		disabled = ally.maintain.disabled({
+		disabled = maintainDisabled({
 			filter: top.element
 		});
 

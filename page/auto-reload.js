@@ -3,8 +3,8 @@
 import ce from '../ce';
 import nav from './nav';
 
-ce.define('mara-auto-reload', function(def) {
-	def.attachedCallback = function() {
+class AutoReload extends ce.HTMLCustomElement {
+	connectedCallback() {
 		this.focusInListener = this.focusInListener.bind(this);
 		window.addEventListener('focus', this.focusInListener);
 
@@ -15,29 +15,29 @@ ce.define('mara-auto-reload', function(def) {
 		if(page) {
 			this.url = page.getAttribute('url');
 		}
-	};
+	}
 
-	def.detachedCallback = function() {
+	detachedCallback() {
 		window.removeEventListener('focus', this.focusInListener);
 		window.removeEventListener('blur', this.focusOutListener);
 		clearTimeout(this.timeout);
-	};
+	}
 
-	def.markForReload = function() {
+	markForReload() {
 		this.shouldReloadNextFocus = true;
 		console.log('should reload');
-	};
+	}
 
-	def.focusOutListener = function() {
+	focusOutListener() {
 		if(this.timeout) {
 			clearTimeout(this.timeout);
 		}
 
 		var timeout = this.getAttribute('in');
 		this.timeout = setTimeout(this.markForReload.bind(this), (parseInt(timeout) || 10) * 60 * 1000);
-	};
+	}
 
-	def.focusInListener = function() {
+	focusInListener() {
 		if(this.timeout) {
 			clearTimeout(this.timeout);
 		}
@@ -46,5 +46,7 @@ ce.define('mara-auto-reload', function(def) {
 			console.log('reloading');
 			nav.reload(this.url);
 		}
-	};
-});
+	}
+}
+
+ce.define('mara-auto-reload', AutoReload);
