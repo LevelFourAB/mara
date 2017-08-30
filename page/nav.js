@@ -4,7 +4,8 @@ import chain from '../util/chain';
 import events from '../events';
 import ce from '../ce';
 
-let api = {};
+const api = {};
+
 let rootUrl = document.location.protocol +  '//' + (document.location.hostname || document.location.host);
 if(document.location.port > 0) {
 	rootUrl += ':'+ document.location.port;
@@ -12,7 +13,7 @@ if(document.location.port > 0) {
 rootUrl += '/';
 
 function go(url, source, isReload) {
-	var page = document.querySelector('mara-page');
+	const page = document.querySelector('mara-page');
 	if(page) {
 		history.replaceState(page.pageState, "", window.location);
 	}
@@ -25,7 +26,7 @@ function ajaxify(el) {
 	el.delegateEventListener('click', 'a', function(e) {
 		if((typeof e.which != 'undefined' && e.which != 1) || e.metaKey || e.ctrlKey || e.altKey) return;
 
-		var href = this.href;
+		var href = typeof this.href.animVal !== 'undefined' ? this.href.animVal : this.href;
 		if(href.indexOf(rootUrl) !== 0 || this.matches('.external')) return;
 
 		e.preventDefault();
@@ -35,7 +36,7 @@ function ajaxify(el) {
 	});
 
 	el.delegateEventListener('submit', 'form', function(e) {
-		var href = makeAbsolute(e.target.getAttribute('action') || document.location.toString());
+		const href = makeAbsolute(e.target.getAttribute('action') || document.location.toString());
 		if(String(href).indexOf(rootUrl) !== 0) return;
 		if(this.matches('.external')) return;
 
@@ -63,34 +64,29 @@ function ajaxify(el) {
 
 var container;
 
-var navigateLoad = function() {
+function navigateLoad() {
 	if(this.status < 200 || this.status > 299) {
 		navigateError.call(this);
 		return;
 	}
 
-	var html = this.responseText
-		.replace(/<\!DOCTYPE[^>]*>/i, '')
-		.replace(/<(html|head|body|title|script)([\s\>])/gi,'<div class="document-$1"$2')
-		.replace(/<(meta)([\s\>])/gi,'<div class="document-$1"$2</div>')
-		.replace(/<\/(html|head|body|title|script)\>/gi,'</div>');
-
-	let now = Date.now();
+	const html = this.responseText;
+	const now = Date.now();
 
 	if(now - api.loadStart > api.minLoadTime) {
 		loadHtml(html);
 	} else {
 		setTimeout(() => loadHtml(html), api.minLoadTime - (now - api.loadStart));
 	}
-};
+}
 
-var loadHtml = function(html) {
-	var newDoc = document.createElement('div');
-	newDoc.innerHTML = html;
+function loadHtml(html) {
+	const newDoc = document.implementation.createHTMLDocument();
+	newDoc.documentElement.innerHTML = html;
 
-	var newPage = newDoc.querySelector('mara-page');
-	var dialog = newDoc.querySelector('mara-dialog');
-	let notification = newDoc.querySelector('mara-notification');
+	const newPage = newDoc.querySelector('mara-page');
+	const dialog = newDoc.querySelector('mara-dialog');
+	const notification = newDoc.querySelector('mara-notification');
 
 	var url;
 	if(newPage && ! dialog) {
@@ -100,20 +96,19 @@ var loadHtml = function(html) {
 		url = newPage.getAttribute('url');
 	}
 
-	var oldDialog = document.querySelector('mara-dialog');
-	if(oldDialog) {
+	const oldDialogs = document.querySelectorAll('mara-dialog');
+	for(const oldDialog of oldDialogs) {
 		oldDialog.close();
 	}
 
-	var page = ! dialog && ! notification ? newPage : document.querySelector('mara-page');
+	const page = ! dialog && ! notification ? newPage : document.querySelector('mara-page');
 
 	if(dialog) {
 		url = dialog.getAttribute('url');
 		page.after(dialog);
 	} else if(notification) {
-		if(oldDialog) {
-			notification.dialog = oldDialog;
-		}
+		notification.dialogs = oldDialogs;
+
 		url = page.getAttribute('url');
 		page.after(notification);
 	} else {
@@ -122,7 +117,7 @@ var loadHtml = function(html) {
 
 		console.log('history state', history.state);
 		if(history.state) {
-			page.setPageState(history.state);
+			page.pageState = history.state;
 		}
 	}
 
@@ -143,22 +138,22 @@ var loadHtml = function(html) {
 			dialog: dialog
 		});
 	}, 0);
-};
+}
 
-var navigateProgress = function(e) {
+function navigateProgress(e) {
 	if(e.lengthComputable) {
 		events.trigger(document, 'navigateProgress', {
 			progress: e.loaded / e.total
 		});
 	}
-};
+}
 
-var navigateError = function() {
+function navigateError() {
 	console.log('Navigation error');
 	events.trigger(document, 'navigateError');
-};
+}
 
-var makeAbsolute = function(url) {
+function makeAbsolute(url) {
 	if(url.search(/^\/\//) != -1) {
 		return window.location.protocol + url;
 	}
@@ -169,17 +164,17 @@ var makeAbsolute = function(url) {
 		return window.location.origin + url;
 	}
 
-	var base = window.location.href.match(/(.*\/)/)[0];
+	const base = window.location.href.match(/(.*\/)/)[0];
 	return base + url;
-};
+}
 
-var navigate = function(from, isReload) {
+function navigate(from, isReload) {
 	if(! container) return;
 
-	var url = makeAbsolute(container.getAttribute('url') || '');
+	const url = makeAbsolute(container.getAttribute('url') || '');
 
-	var dialog = document.querySelector('mara-dialog');
-	if(dialog) {
+	const dialogs = document.querySelectorAll('mara-dialog');
+	for(const dialog of dialogs) {
 		// TODO: Do we always want to do this?
 		dialog.removeIfVisible();
 	}
@@ -199,7 +194,7 @@ var navigate = function(from, isReload) {
 
 	api.loadStart = Date.now();
 
-	var req = new XMLHttpRequest();
+	const req = new XMLHttpRequest();
 	req.onload = navigateLoad;
 	req.onerror = navigateError;
 	req.onprogress = navigateProgress;
@@ -208,18 +203,18 @@ var navigate = function(from, isReload) {
 	req.setRequestHeader('X-Partial', 'true');
 	req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	req.send();
-};
+}
 
-var reload = function(url) {
+function reload(url) {
 	if(url) {
 		url = makeAbsolute(url);
 		if(url !== document.location.toString()) return;
 	}
 
 	navigate(null, true);
-};
+}
 
-var formSerialize = function(form) {
+function formSerialize(form) {
 	if(! form || form.nodeName !== 'FORM') return;
 
 	let result = [];
@@ -269,9 +264,9 @@ var formSerialize = function(form) {
 	}
 
 	return result.join('&');
-};
+}
 
-var performPost = function(target, method, data, form) {
+function performPost(target, method, data, form) {
 	var url = makeAbsolute(target);
 	events.trigger(document, 'navigateStarted', {
 		url: url,
@@ -280,7 +275,7 @@ var performPost = function(target, method, data, form) {
 
 	api.loadStart = Date.now();
 
-	var req = new XMLHttpRequest();
+	const req = new XMLHttpRequest();
 	req.onload = chain(function() {
 		history.pushState(null, "", target);
 	}, navigateLoad);
@@ -293,7 +288,7 @@ var performPost = function(target, method, data, form) {
 	req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	req.setRequestHeader('X-Partial', 'true');
 	req.send(data);
-};
+}
 
 class MaraPage extends ce.HTMLCustomElement {
 	init() {
@@ -362,5 +357,6 @@ window.addEventListener('popstate', function() {
 
 api.go = go;
 api.reload = reload;
+api.serializeForm = formSerialize;
 
 export default api;
