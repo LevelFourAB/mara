@@ -13,10 +13,18 @@ class Notification extends ce.HTMLCustomElement {
 			delete this.dialog;
 		};
 
-		if(this.dialog) {
-			if(this.dialog.isOpen) {
-				this.dialog.addOnceEventListener('dialog:close', show);
-			} else {
+		if(this.dialogs && this.dialogs.length > 0) {
+			this.count = 0;
+			for(const dialog of this.dialogs) {
+				if(dialog.isOpen) {
+					this.count++;
+					dialog.addOnceEventListener('dialog:close', () => {
+						if(--this.count <= 0) show()
+					});
+				}
+			}
+
+			if(this.count == 0) {
 				show();
 			}
 		} else {
