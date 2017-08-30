@@ -1,6 +1,5 @@
 'use strict';
 
-import chain from '../util/chain';
 import ce from '../ce';
 
 let empty = function(value) { return value; };
@@ -21,80 +20,80 @@ addType('number', parseInt);
 addType('range', parseInt);
 addType('boolean', function(value) { return "true" == value; });
 
-let defineAsSection = function(el) {
-	el.createdCallback = chain(el.createdCallback, function() {
+const FormSection = superclass => class extends superclass {
+	init() {
+		super.init();
+
 		this.inputs = [];
-	});
+	}
 
-	el.addInput = function(input) {
-		if(! this.inputs) this.inputs = [];
+	addInput(input) {
+		const idx = this.inputs.indexOf(input);
+		if(idx >= 0) return;
 		this.inputs.push(input);
-	};
+	}
 
-	el.removeInput = function(input) {
-		let idx = this.inputs.indexOf(input);
-		if(idx > 0) {
+	removeInput(input) {
+		const idx = this.inputs.indexOf(input);
+		if(idx >= 0) {
 			this.inputs.slice(idx, 1);
 		}
-	};
+	}
 
-	el.toData = function() {
-		if(! this.inputs) return {};
-
-		var result = {};
-		this.inputs.forEach(function(input) {
+	toData() {
+		const result = {};
+		for(const input of this.inputs) {
 			result[input.name] = input.toData();
-		});
-
+		};
 		return result;
-	};
+	}
 
-	el.fromData = function(data) {
-		this.inputs.forEach(function(input) {
+	fromData(data) {
+		for(const input of this.inputs) {
 			input.fromData(data[input.name]);
-		});
-	};
+		}
+	}
 };
 
 let markAsChanged = function() {
-	this.classList.add('ml-changed');
+	this.classList.add('mara-changed');
 };
 
-let inputFocusOp = function() {
-	this.addEventListener('blur', markAsChanged);
-	this.addEventListener('keypress', markAsChanged);
-	this.addEventListener('change', markAsChanged);
-};
+const FormInput = superclass => class extends superclass {
+	init() {
+		super.init();
 
-let inputAttachOp = function() {
-	let parent = this.parentElement;
-	while(parent) {
-		if(parent.addInput) break;
-
-		parent = parent.parentElement;
+		this.addEventListener('blur', markAsChanged);
+		this.addEventListener('keypress', markAsChanged);
+		this.addEventListener('change', markAsChanged);
 	}
 
-	if(! parent) return;
+	connectedCallback() {
+		super.connectedCallback();
 
-	this.mlForm = parent;
-	parent.addInput(this);
-};
+		let parent = this.parentElement;
+		while(parent) {
+			if(parent.addInput) break;
 
-let inputDetachOp = function() {
-	if(this.mlForm) {
-		this.mlForm.removeInput(this);
+			parent = parent.parentElement;
+		}
+
+		if(! parent) return;
+
+		this.mlForm = parent;
+		parent.addInput(this);
 	}
-};
 
-let defineAsInput = function(el) {
-	el.attachedCallback = chain(el.attachedCallback, inputAttachOp);
-	el.detachedCallback = chain(el.detachedCallback, inputDetachOp);
-	el.createdCallback = chain(el.createdCallback, inputFocusOp);
+	disconnectedCallback() {
+		if(this.mlForm) {
+			this.mlForm.removeInput(this);
+		}
+	}
 };
 
 export default {
-	input: defineAsInput,
-	section: defineAsSection,
+	FormInput,
+	FormSection,
 	adapterFor: adapterFor,
 	addType: addType
 };
