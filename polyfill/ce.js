@@ -1,4 +1,7 @@
 'use strict';
 
-import standard from './standard';
-import ce from 'document-register-element';
+import 'dom4';
+import '@webcomponents/custom-elements/src/custom-elements';
+import '@webcomponents/custom-elements/src/native-shim';
+
+export default {};
