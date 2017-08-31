@@ -1,6 +1,6 @@
 'use strict';
 
-import { mix } from 'mixwith';
+import { Mixin, mix } from 'mixwith';
 
 /**
  * Create a class that extends the given superclass that fulfills the
@@ -42,7 +42,7 @@ function create(superclass) {
  *
  * Uses setTimeout right now, but that might not be the best way to do this.
  */
-const DOMReady = superclass => class extends superclass {
+const DOMReady = Mixin(superclass => class extends superclass {
 	connectedCallback() {
 		super.connectedCallback();
 		setTimeout(() => this.domReadyCallback(), 0);
@@ -50,14 +50,12 @@ const DOMReady = superclass => class extends superclass {
 
 	domReadyCallback() {
 	}
-};
+});
 
 const define = window.customElements.define.bind(window.customElements);
 export default {
 	HTMLCustomElement: create(HTMLElement),
-	HTMLCustomSelectElement: create(HTMLSelectElement),
-	HTMLCustomInputElement: create(HTMLInputElement),
-	HTMLCustomTextAreaElement: create(HTMLTextAreaElement),
 	DOMReady,
+	Mixin: Mixin,
 	define
 };

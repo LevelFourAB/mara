@@ -2,10 +2,19 @@
 
 import ce from '../ce';
 import api from './api';
+import delegate from '../events/delegate';
 
 let fileId = 0;
 
+let markAsChanged = function() {
+	this.classList.add('mara-changed');
+};
+
 class MaraForm extends ce.HTMLCustomElement.with(api.FormSection, ce.DOMReady) {
+	init() {
+		delegate(this, 'input', 'input, select, textarea', markAsChanged);
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 
@@ -48,7 +57,11 @@ class MaraForm extends ce.HTMLCustomElement.with(api.FormSection, ce.DOMReady) {
 		this.form.appendChild(i);
 
 		this.appendChild(this.form);
-	};
+	}
+
+	get sectionInputRoot() {
+		return this.wrapper;
+	}
 
 	get method() {
 		return this.getAttribute('method') || 'POST';
@@ -95,6 +108,7 @@ class MaraForm extends ce.HTMLCustomElement.with(api.FormSection, ce.DOMReady) {
 }
 
 ce.define('mara-form', MaraForm);
+export default MaraForm;
 
 function getFilesFromData(data, result) {
 	if(data && data.data instanceof window.File) {

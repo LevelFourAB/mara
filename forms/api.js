@@ -20,46 +20,110 @@ addType('number', parseInt);
 addType('range', parseInt);
 addType('boolean', function(value) { return "true" == value; });
 
-const FormSection = superclass => class extends superclass {
+function traverse(root, onInput) {
+	const children = root.children;
+	for(let i=0, n=children.length; i<n; i++) {
+		const child = children[i];
+		if(child instanceof FormInput) {
+			onInput(child);
+
+			continue;
+		} else if(child instanceof HTMLElement) {
+			switch(child.nodeName) {
+				case 'INPUT':
+				case 'TEXTAREA':
+				case 'SELECT':
+					onInput(child);
+					continue;
+			}
+		}
+
+		if(child instanceof Element) {
+			// Descend into all elements
+			traverse(child, onInput);
+		}
+	}
+}
+
+const FormSection = ce.Mixin(superclass => class extends superclass {
 	init() {
 		super.init();
-
-		this.inputs = [];
-	}
-
-	addInput(input) {
-		const idx = this.inputs.indexOf(input);
-		if(idx >= 0) return;
-		this.inputs.push(input);
-	}
-
-	removeInput(input) {
-		const idx = this.inputs.indexOf(input);
-		if(idx >= 0) {
-			this.inputs.slice(idx, 1);
-		}
 	}
 
 	toData() {
 		const result = {};
-		for(const input of this.inputs) {
-			result[input.name] = input.toData();
-		};
+		traverse(this.sectionInputRoot || this, input => {
+			if(input instanceof FormInput) {
+				result[input.name] = input.toData();
+			} else {
+				const type = input.getAttribute('mara-type') || input.getAttribute('data-mara-type') || input.type;
+				const adapter = adapterFor(type);
+				let value = input.value;
+				switch(input.type) {
+					case 'checkbox':
+						if(! input.checked) {
+							value = null;
+						}
+						break;
+					case 'file':
+						let files = [];
+						for(let i=0; i<input.files.length; i++) {
+							let file = input.files[i];
+							files.push({
+								id: 'file-' + (fileId++),
+								name: file.name,
+								size: file.size,
+								type: file.type,
+								data: file
+							});
+						}
+
+						if(input.multiple) {
+							value = files;
+						} else {
+							value = files[0];
+						}
+						break;
+				}
+
+				if(adapter) {
+					value = adapter.toData(value);
+				}
+
+				result[input.name] = value;
+			}
+		});
 		return result;
 	}
 
 	fromData(data) {
-		for(const input of this.inputs) {
-			input.fromData(data[input.name]);
-		}
+		traverse(this.sectionInputRoot || this, input => {
+			const name = input.name;
+			if(input instanceof FormInput) {
+				input.fromData(data[name]);
+			} else {
+				const type = input.getAttribute('mara-type') || input.getAttribute('data-mara-type') || input.type;
+				const adapter = adapterFor(type);
+				const value = adapter ? adapter.fromData(data) : data;
+				switch(input.type) {
+					case 'checkbox':
+						if(value) {
+							input.checked = true;
+						}
+						break;
+					default:
+						input.value = value;
+				}
+			}
+		});
 	}
-};
+});
 
 let markAsChanged = function() {
 	this.classList.add('mara-changed');
 };
 
-const FormInput = superclass => class extends superclass {
+const FormInput = ce.Mixin(superclass => class extends superclass {
 	init() {
 		super.init();
 
@@ -67,29 +131,7 @@ const FormInput = superclass => class extends superclass {
 		this.addEventListener('keypress', markAsChanged);
 		this.addEventListener('change', markAsChanged);
 	}
-
-	connectedCallback() {
-		super.connectedCallback();
-
-		let parent = this.parentElement;
-		while(parent) {
-			if(parent.addInput) break;
-
-			parent = parent.parentElement;
-		}
-
-		if(! parent) return;
-
-		this.mlForm = parent;
-		parent.addInput(this);
-	}
-
-	disconnectedCallback() {
-		if(this.mlForm) {
-			this.mlForm.removeInput(this);
-		}
-	}
-};
+});
 
 export default {
 	FormInput,
