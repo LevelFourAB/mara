@@ -1,10 +1,12 @@
 'use strict';
 
-import ce from '../ce';
-import api from './api';
+import { HTMLCustomElement, define } from '../ce';
+import { FormSection } from './api';
 
-ce.define('mara-form-section', class Section extends ce.HTMLCustomElement.with(api.FormSection, api.FormInput) {
+export class Section extends HTMLCustomElement.with(FormSection) {
 	get name() {
 		return this.getAttribute('name');
 	}
-});
+}
+
+define('mara-form-section', Section);

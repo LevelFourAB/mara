@@ -3,6 +3,23 @@
 import { Mixin, mix } from 'mixwith';
 
 /**
+ * Export customElements.define as simply define.
+ */
+export const define = window.customElements.define.bind(window.customElements);
+
+/**
+ * Create a new class with the given mixins that also contains a static
+ * method for adding more mixins.
+ */
+function mixClass(type, mixins) {
+	const base = mix(type).with(...mixins);
+	base.with = function(...args) {
+		return mixClass(base, args);
+	};
+	return base;
+}
+
+/**
  * Create a class that extends the given superclass that fulfills the
  * constructor requirements of the Custom Elements polyfill and calls a
  * init() method during creation.
@@ -12,7 +29,7 @@ function create(superclass) {
 	const type = class extends superclass {
 		constructor(self) {
 			self = super(self);
-			self.init();
+			self.createdCallback();
 			return self;
 		}
 
@@ -22,7 +39,7 @@ function create(superclass) {
 		disconnectedCallback() {
 		}
 
-		init() {
+		createdCallback() {
 		}
 	};
 
@@ -30,11 +47,16 @@ function create(superclass) {
 	 * Mix in some behaviour with this class.
 	 */
 	type.with = function(...args) {
-		return mix(type).with(...args);
+		return mixClass(type, args);
 	};
 
 	return type;
 }
+
+/**
+ * Export HTMLCustomElement.
+ */
+export let HTMLCustomElement = create(HTMLElement);
 
 /**
  * Behaviour that adds domReadyCallback that is called when the contents of
@@ -42,7 +64,7 @@ function create(superclass) {
  *
  * Uses setTimeout right now, but that might not be the best way to do this.
  */
-const DOMReady = Mixin(superclass => class extends superclass {
+export const DOMReady = Mixin(superclass => class extends superclass {
 	connectedCallback() {
 		super.connectedCallback();
 		setTimeout(() => this.domReadyCallback(), 0);
@@ -52,10 +74,25 @@ const DOMReady = Mixin(superclass => class extends superclass {
 	}
 });
 
-const define = window.customElements.define.bind(window.customElements);
-export default {
-	HTMLCustomElement: create(HTMLElement),
-	DOMReady,
-	Mixin: Mixin,
-	define
-};
+/**
+ * Behaviour that adds a hook for performing initial rendering when the
+ * element is first connected to the DOM.
+ */
+const hasBeenRendered = Symbol('hasBeenRendered');
+export const InitialRender = Mixin(superclass => class extends superclass {
+	connectedCallback() {
+		super.connectedCallback();
+		if(! this[hasBeenRendered]) {
+			this[hasBeenRendered] = true;
+			this.initialRenderCallback();
+		}
+	}
+
+	initialRenderCallback() {
+	}
+});
+
+/**
+ * Export Mixin for easily creating new behaviours without knowledge about mixwith.js
+ */
+export { Mixin };

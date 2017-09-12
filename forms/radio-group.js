@@ -1,9 +1,9 @@
 'use strict';
 
-import ce from '../ce';
-import api from './api';
+import { HTMLCustomElement, define } from '../ce';
+import { FormInput } from './api';
 
-class RadioGroup extends ce.HTMLCustomElement.with(api.FormInput) {
+export class RadioGroup extends HTMLCustomElement.with(FormInput) {
 
 	get maraType() {
 		return this.getAttribute('mara-type');
@@ -41,4 +41,4 @@ class RadioGroup extends ce.HTMLCustomElement.with(api.FormInput) {
 	}
 }
 
-ce.define('mara-radio-group', RadioGroup);
+define('mara-radio-group', RadioGroup);

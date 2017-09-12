@@ -1,10 +1,12 @@
 'use strict';
 
 import nav from './nav';
-import ce from '../ce';
+import { HTMLCustomElement, define } from '../ce';
 
-class PageLoadError extends ce.HTMLCustomElement {
-	init() {
+class PageLoadError extends HTMLCustomElement {
+	createdCallback() {
+		super.createdCallback();
+
 		this.navigateStarted = this.navigateStarted.bind(this);
 		this.navigateError = this.navigateError.bind(this);
 
@@ -40,4 +42,4 @@ class PageLoadError extends ce.HTMLCustomElement {
 	}
 }
 
-ce.define('mara-page-load-error', PageLoadError);
+define('mara-page-load-error', PageLoadError);

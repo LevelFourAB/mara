@@ -1,23 +1,34 @@
 'use strict';
 
-import ce from '../ce';
+import { HTMLCustomElement, define } from '../ce';
 import nav from './nav';
 
-class AutoReload extends ce.HTMLCustomElement {
-	connectedCallback() {
-		this.focusInListener = this.focusInListener.bind(this);
-		window.addEventListener('focus', this.focusInListener);
+export class AutoReload extends HTMLCustomElement {
+	createdCallback() {
+		super.createdCallback();
 
+		this.focusInListener = this.focusInListener.bind(this);
 		this.focusOutListener = this.focusOutListener.bind(this);
+		this.markForReload = this.markForReload.bind(this);
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+
+		window.addEventListener('focus', this.focusInListener);
 		window.addEventListener('blur', this.focusOutListener);
 
-		let page = this.closest('ml-page');
+		let page = this.closest('mara-page');
 		if(page) {
 			this.url = page.getAttribute('url');
+		} else {
+			this.url = document.location.toString();
 		}
 	}
 
-	detachedCallback() {
+	disconnectedCallback() {
+		super.disconnectedCallback();
+
 		window.removeEventListener('focus', this.focusInListener);
 		window.removeEventListener('blur', this.focusOutListener);
 		clearTimeout(this.timeout);
@@ -25,7 +36,6 @@ class AutoReload extends ce.HTMLCustomElement {
 
 	markForReload() {
 		this.shouldReloadNextFocus = true;
-		console.log('should reload');
 	}
 
 	focusOutListener() {
@@ -34,7 +44,7 @@ class AutoReload extends ce.HTMLCustomElement {
 		}
 
 		var timeout = this.getAttribute('in');
-		this.timeout = setTimeout(this.markForReload.bind(this), (parseInt(timeout) || 10) * 60 * 1000);
+		this.timeout = setTimeout(this.markForReload, (parseInt(timeout) || 10) * 60 * 1000);
 	}
 
 	focusInListener() {
@@ -43,10 +53,9 @@ class AutoReload extends ce.HTMLCustomElement {
 		}
 
 		if(this.shouldReloadNextFocus) {
-			console.log('reloading');
 			nav.reload(this.url);
 		}
 	}
 }
 
-ce.define('mara-auto-reload', AutoReload);
+define('mara-auto-reload', AutoReload);

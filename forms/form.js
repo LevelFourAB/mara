@@ -1,7 +1,7 @@
 'use strict';
 
-import ce from '../ce';
-import api from './api';
+import { HTMLCustomElement, DOMReady, define } from '../ce';
+import { FormSection } from './api';
 import delegate from '../events/delegate';
 
 let fileId = 0;
@@ -10,8 +10,8 @@ let markAsChanged = function() {
 	this.classList.add('mara-changed');
 };
 
-class MaraForm extends ce.HTMLCustomElement.with(api.FormSection, ce.DOMReady) {
-	init() {
+export class MaraForm extends HTMLCustomElement.with(FormSection, DOMReady) {
+	createdCallback() {
 		delegate(this, 'input', 'input, select, textarea', markAsChanged);
 	}
 
@@ -107,8 +107,7 @@ class MaraForm extends ce.HTMLCustomElement.with(api.FormSection, ce.DOMReady) {
 	}
 }
 
-ce.define('mara-form', MaraForm);
-export default MaraForm;
+define('mara-form', MaraForm);
 
 function getFilesFromData(data, result) {
 	if(data && data.data instanceof window.File) {

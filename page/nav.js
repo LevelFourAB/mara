@@ -2,7 +2,7 @@
 
 import chain from '../util/chain';
 import events from '../events';
-import ce from '../ce';
+import { HTMLCustomElement, InitialRender, define } from '../ce';
 
 const api = {};
 
@@ -290,8 +290,18 @@ function performPost(target, method, data, form) {
 	req.send(data);
 }
 
-class MaraPage extends ce.HTMLCustomElement {
-	init() {
+class MaraPage extends HTMLCustomElement.with(InitialRender) {
+	get pageTitle() {
+		return this.getAttribute('page-title');
+	}
+
+	get url() {
+		return this.getAttribute('url');
+	}
+
+	initialRenderCallback() {
+		super.initialRenderCallback();
+
 		var w = this.hasAttribute('window');
 
 		if(! w) ajaxify(this);
@@ -306,15 +316,9 @@ class MaraPage extends ce.HTMLCustomElement {
 		container = this;
 	}
 
-	get pageTitle() {
-		return this.getAttribute('page-title');
-	}
-
-	get url() {
-		return this.getAttribute('url');
-	}
-
 	connectedCallback() {
+		super.connectedCallback();
+
 		document.title = this.pageTitle;
 		api.lastPage = this.url;
 	}
@@ -343,7 +347,7 @@ class MaraPage extends ce.HTMLCustomElement {
 		});
 	}
 }
-ce.define('mara-page', MaraPage);
+define('mara-page', MaraPage);
 
 window.addEventListener('popstate', function() {
 	var page = document.querySelector('mara-page');

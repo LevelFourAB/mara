@@ -1,13 +1,13 @@
 'use strict';
 
-import ce from '../ce';
-import api from './api';
+import { HTMLCustomElement, DOMReady, define } from '../ce';
+import { FormSection } from './api';
 import delegate from '../events/delegate';
 
-ce.define('mara-form-repeated-section', class RepeatedSection extends ce.HTMLCustomElement
-	.with(api.FormSection, api.FormInput, ce.DOMReady)
-{
-	init() {
+export class RepeatedSection extends HTMLCustomElement.with(FormSection, DOMReady) {
+	createdCallback() {
+		super.createdCallback();
+
 		this.templates = {};
 
 		delegate(this, 'click', 'button[extended-type]', function(e, t) {
@@ -30,6 +30,8 @@ ce.define('mara-form-repeated-section', class RepeatedSection extends ce.HTMLCus
 	}
 
 	domReadyCallback() {
+		super.domReadyCallback();
+
 		let child = this.firstElementChild;
 		while(child) {
 			let next = child.nextElementSibling;
@@ -124,4 +126,6 @@ ce.define('mara-form-repeated-section', class RepeatedSection extends ce.HTMLCus
 			e.parentNode.removeChild(e);
 		}
 	}
-});
+}
+
+define('mara-form-repeated-section', RepeatedSection);

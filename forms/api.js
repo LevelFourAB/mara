@@ -1,18 +1,18 @@
 'use strict';
 
-import ce from '../ce';
+import { Mixin } from '../ce';
 
 let empty = function(value) { return value; };
 
 let types = {};
-let addType = function(name, toData, fromData) {
+export let addType = function(name, toData, fromData) {
 	types[name] = {
 		toData: toData,
 		fromData: fromData || empty
 	};
 };
 
-let adapterFor = function(type) {
+export let adapterFor = function(type) {
 	return types[type];
 };
 
@@ -24,7 +24,7 @@ function traverse(root, onInput) {
 	const children = root.children;
 	for(let i=0, n=children.length; i<n; i++) {
 		const child = children[i];
-		if(child instanceof FormInput) {
+		if(child instanceof FormInput || child instanceof FormSection) {
 			onInput(child);
 
 			continue;
@@ -45,11 +45,7 @@ function traverse(root, onInput) {
 	}
 }
 
-const FormSection = ce.Mixin(superclass => class extends superclass {
-	init() {
-		super.init();
-	}
-
+export const FormSection = Mixin(superclass => class extends superclass {
 	toData() {
 		const result = {};
 		traverse(this.sectionInputRoot || this, input => {
@@ -123,19 +119,20 @@ let markAsChanged = function() {
 	this.classList.add('mara-changed');
 };
 
-const FormInput = ce.Mixin(superclass => class extends superclass {
-	init() {
-		super.init();
+export const FormInput = Mixin(superclass => class extends superclass {
+	createdCallback() {
+		super.createdCallback();
 
 		this.addEventListener('blur', markAsChanged);
 		this.addEventListener('keypress', markAsChanged);
 		this.addEventListener('change', markAsChanged);
 	}
-});
 
-export default {
-	FormInput,
-	FormSection,
-	adapterFor: adapterFor,
-	addType: addType
-};
+	markAsChanged() {
+		this.classList.add('mara-changed');
+	}
+
+	markAsUnchanged() {
+		this.classList.remove('mara-changed');
+	}
+});

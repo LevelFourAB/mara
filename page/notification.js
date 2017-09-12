@@ -1,10 +1,12 @@
 'use strict';
 
-import ce from '../ce';
+import { HTMLCustomElement, define } from '../ce';
 import transitions from '../transitions';
 
-class Notification extends ce.HTMLCustomElement {
+class Notification extends HTMLCustomElement {
 	connectedCallback() {
+		super.connectedCallback();
+
 		let show = () => {
 			this.classList.add('active');
 
@@ -41,4 +43,4 @@ class Notification extends ce.HTMLCustomElement {
 	}
 };
 
-ce.define('mara-notification', Notification);
+define('mara-notification', Notification);

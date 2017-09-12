@@ -1,13 +1,15 @@
 'use strict';
 
 import nav from './nav';
-import ce from '../ce';
+import { HTMLCustomElement, InitialRender, define } from '../ce';
 import stack from './stack';
 
 import transitions from '../transitions';
 
-class Dialog extends ce.HTMLCustomElement {
-	init() {
+class Dialog extends HTMLCustomElement.with(InitialRender) {
+	initialRenderCallback() {
+		super.initialRenderCallback();
+
 		this.delegateEventListener('click', 'button[extended-type=close], [data-type=close]', function(e, t) {
 			e.preventDefault();
 			e.stopImmediatePropagation();
@@ -22,6 +24,8 @@ class Dialog extends ce.HTMLCustomElement {
 	}
 
 	connectedCallback() {
+		super.connectedCallback();
+
 		this._previousFocus = document.activeElement;
 
 		setTimeout(() => {
@@ -40,6 +44,8 @@ class Dialog extends ce.HTMLCustomElement {
 	}
 
 	disconnectedCallback() {
+		super.disconnectedCallback();
+
 		stack.hide(this);
 	}
 
@@ -80,4 +86,4 @@ class Dialog extends ce.HTMLCustomElement {
 	}
 }
 
-ce.define('mara-dialog', Dialog);
+define('mara-dialog', Dialog);
