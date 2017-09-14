@@ -53,7 +53,7 @@ export const FormSection = Mixin(superclass => class extends superclass {
 	toData() {
 		const result = {};
 		traverse(this.sectionInputRoot || this, input => {
-			if(input instanceof FormInput) {
+			if(input instanceof FormInput || input instanceof FormSection) {
 				result[input.name] = input.toData();
 			} else {
 				const type = input.getAttribute('mara-type') || input.getAttribute('data-mara-type') || input.type;
@@ -99,7 +99,7 @@ export const FormSection = Mixin(superclass => class extends superclass {
 	fromData(data) {
 		traverse(this.sectionInputRoot || this, input => {
 			const name = input.name;
-			if(input instanceof FormInput) {
+			if(input instanceof FormInput || input instanceof FormSection) {
 				input.fromData(data[name]);
 			} else {
 				const type = input.getAttribute('mara-type') || input.getAttribute('data-mara-type') || input.type;
