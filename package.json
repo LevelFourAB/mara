@@ -6,8 +6,8 @@
     "@webcomponents/custom-elements": "^1.0.2",
     "ally.js": "^1.4.1",
     "dom4": "^1.8.3",
-    "lodash": "^3.8.0",
-    "mixwith": "^0.1.1",
+    "foibles": "^0.1.0",
+    "lodash": "^3.8.0"
   },
   "jspm": {
     "jspmNodeConversion": false,

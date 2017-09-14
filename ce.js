@@ -1,23 +1,11 @@
 'use strict';
 
-import { Mixin, mix } from 'mixwith';
+import { Mixin, toExtendable } from 'foibles';
 
 /**
  * Export customElements.define as simply define.
  */
 export const define = window.customElements.define.bind(window.customElements);
-
-/**
- * Create a new class with the given mixins that also contains a static
- * method for adding more mixins.
- */
-function mixClass(type, mixins) {
-	const base = mix(type).with(...mixins);
-	base.with = function(...args) {
-		return mixClass(base, args);
-	};
-	return base;
-}
 
 /**
  * Create a class that extends the given superclass that fulfills the
@@ -26,7 +14,7 @@ function mixClass(type, mixins) {
  *
  */
 function create(superclass) {
-	const type = class extends superclass {
+	return toExtendable(class extends superclass {
 		constructor(self) {
 			self = super(self);
 			self.createdCallback();
@@ -41,16 +29,7 @@ function create(superclass) {
 
 		createdCallback() {
 		}
-	};
-
-	/*
-	 * Mix in some behaviour with this class.
-	 */
-	type.with = function(...args) {
-		return mixClass(type, args);
-	};
-
-	return type;
+	});
 }
 
 /**
