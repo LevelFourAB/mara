@@ -33,8 +33,12 @@ function traverse(root, onInput) {
 				case 'INPUT':
 				case 'TEXTAREA':
 				case 'SELECT':
-					onInput(child);
-					continue;
+					// First check if this input is ignored
+					const ignore = child.getAttribute('mara-ignore') || child.getAttribute('data-mara-ignore');
+					if(ignore !== 'true') {
+						onInput(child);
+					}
+
 			}
 		}
 
