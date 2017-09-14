@@ -1,7 +1,7 @@
 'use strict';
 
 import { HTMLCustomElement, define } from '../ce';
-import { FormInput } from './api';
+import { adapterFor, FormInput } from './api';
 
 export class RadioGroup extends HTMLCustomElement.with(FormInput) {
 
@@ -26,7 +26,7 @@ export class RadioGroup extends HTMLCustomElement.with(FormInput) {
 
 	toData() {
 		var type = this.maraType || 'text';
-		var adapter = api.adapterFor(type);
+		var adapter = adapterFor(type);
 		if(adapter) {
 			return adapter.toData(this.value);
 		}
@@ -36,7 +36,7 @@ export class RadioGroup extends HTMLCustomElement.with(FormInput) {
 
 	fromData(data) {
 		var type = this.maraType || this.type;
-		var adapter = api.adapterFor(type);
+		var adapter = adapterFor(type);
 		this.value = adapter ? adapter.fromData(data) : data;
 	}
 }
