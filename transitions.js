@@ -1,6 +1,6 @@
 'use strict';
 
-import './events';
+import { listenOnce } from './events';
 
 var transitionTypes = {
 	'WebkitTransition': [ 'webkitTransitionEnd', '-webkit-' ],
@@ -192,7 +192,7 @@ class TransitionBuilder {
 			self._setVendorStyle(el, 'transition-property', transitioned);
 
 			requestAnimationFrame(() => {
-				el.addOnceEventListener(endEvent, listener);
+				listenOnce(el, endEvent, listener);
 
 				for(var prop in props) {
 					el.style.setProperty(prop, props[prop]);
@@ -216,7 +216,7 @@ export default {
 	eventName: endEvent,
 
 	afterTransition: function(el, callback) {
-		el.addOnceEventListener(endEvent, callback);
+		listenOnce(el, endEvent, callback);
 	},
 
 	transitionViaClass: function(el, cssClass, callback) {

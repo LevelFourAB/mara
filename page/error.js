@@ -2,6 +2,7 @@
 
 import nav from './nav';
 import { HTMLCustomElement, define } from '../ce';
+import { delegateEventListener } from '../events';
 
 class PageLoadError extends HTMLCustomElement {
 	createdCallback() {
@@ -10,7 +11,7 @@ class PageLoadError extends HTMLCustomElement {
 		this.navigateStarted = this.navigateStarted.bind(this);
 		this.navigateError = this.navigateError.bind(this);
 
-		this.delegateEventListener('click', 'button[extended-type]', function(e) {
+		delegateEventListener(this, 'click', 'button[extended-type]', function(e) {
 			e.preventDefault();
 			switch(this.getAttribute('extended-type')) {
 				case 'reload':

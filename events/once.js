@@ -7,4 +7,10 @@ export default function(el, event, listener, capture=false) {
 	};
 
 	el.addEventListener(event, actualListener, capture);
+
+	return {
+		remove() {
+			el.removeEventListener(event, actualListener);
+		}
+	};
 }

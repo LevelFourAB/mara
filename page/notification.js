@@ -1,6 +1,7 @@
 'use strict';
 
 import { HTMLCustomElement, define } from '../ce';
+import { listenOnce } from '../events';
 import transitions from '../transitions';
 
 class Notification extends HTMLCustomElement {
@@ -20,7 +21,7 @@ class Notification extends HTMLCustomElement {
 			for(const dialog of this.dialogs) {
 				if(dialog.isOpen) {
 					this.count++;
-					dialog.addOnceEventListener('dialog:close', () => {
+					listenOnce(dialog, 'dialog:close', () => {
 						if(--this.count <= 0) show()
 					});
 				}
@@ -35,7 +36,7 @@ class Notification extends HTMLCustomElement {
 	}
 
 	hide() {
-		this.addOnceEventListener(transitions.eventName, () => {
+		listenOnce(this, transitions.eventName, () => {
 			this.remove();
 		});
 

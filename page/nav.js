@@ -3,6 +3,7 @@
 import chain from '../util/chain';
 import events from '../events';
 import { HTMLCustomElement, InitialRender, define } from '../ce';
+import { triggerEvent, delegateEventListener } from '../events';
 
 const api = {};
 
@@ -23,7 +24,7 @@ function go(url, source, isReload) {
 }
 
 function ajaxify(el) {
-	el.delegateEventListener('click', 'a', function(e) {
+	delegateEventListener(el, 'click', 'a', function(e) {
 		if((typeof e.which != 'undefined' && e.which != 1) || e.metaKey || e.ctrlKey || e.altKey) return;
 
 		var href = typeof this.href.animVal !== 'undefined' ? this.href.animVal : this.href;
@@ -35,7 +36,7 @@ function ajaxify(el) {
 		go(href, this, document.location == href);
 	});
 
-	el.delegateEventListener('submit', 'form', function(e) {
+	delegateEventListener(el, 'submit', 'form', function(e) {
 		const href = makeAbsolute(e.target.getAttribute('action') || document.location.toString());
 		if(String(href).indexOf(rootUrl) !== 0) return;
 		if(this.matches('.external')) return;
@@ -133,7 +134,7 @@ function loadHtml(html) {
 			if(focus) focus.focus();
 		}
 
-		events.trigger(document, 'navigateDone', {
+		triggerEvent(document, 'navigateDone', {
 			page: page,
 			dialog: dialog
 		});
@@ -142,7 +143,7 @@ function loadHtml(html) {
 
 function navigateProgress(e) {
 	if(e.lengthComputable) {
-		events.trigger(document, 'navigateProgress', {
+		triggerEvent(document, 'navigateProgress', {
 			progress: e.loaded / e.total
 		});
 	}
@@ -150,7 +151,7 @@ function navigateProgress(e) {
 
 function navigateError() {
 	console.log('Navigation error');
-	events.trigger(document, 'navigateError');
+	triggerEvent(document, 'navigateError');
 }
 
 function makeAbsolute(url) {
@@ -180,7 +181,7 @@ function navigate(from, isReload) {
 	}
 
 	let newUrl = document.location.toString();
-	events.trigger(document, 'navigateStarted', {
+	triggerEvent(document, 'navigateStarted', {
 		url: newUrl,
 		from: from,
 		reload: isReload || false
@@ -268,7 +269,7 @@ function formSerialize(form) {
 
 function performPost(target, method, data, form) {
 	var url = makeAbsolute(target);
-	events.trigger(document, 'navigateStarted', {
+	triggerEvent(document, 'navigateStarted', {
 		url: url,
 		from: form
 	});

@@ -15,7 +15,11 @@ export default function(el, event, filter, listener) {
 		listener.call(current, e, el);
 	};
 
-	actualListener._listener = listener;
-
 	el.addEventListener(event, actualListener);
+
+	return {
+		remove() {
+			el.removeEventListener(event, actualListener);
+		}
+	};
 }

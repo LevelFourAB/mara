@@ -2,6 +2,7 @@
 
 import nav from './nav';
 import { HTMLCustomElement, InitialRender, define } from '../ce';
+import { delegateEventListener, triggerEvent, listenOnce } from '../events';
 import stack from './stack';
 
 import transitions from '../transitions';
@@ -10,7 +11,7 @@ class Dialog extends HTMLCustomElement.with(InitialRender) {
 	initialRenderCallback() {
 		super.initialRenderCallback();
 
-		this.delegateEventListener('click', 'button[extended-type=close], [data-type=close]', function(e, t) {
+		delegateEventListener(this, 'click', 'button[extended-type=close], [data-type=close]', function(e, t) {
 			e.preventDefault();
 			e.stopImmediatePropagation();
 
@@ -29,9 +30,9 @@ class Dialog extends HTMLCustomElement.with(InitialRender) {
 		this._previousFocus = document.activeElement;
 
 		setTimeout(() => {
-			this.addOnceEventListener(transitions.eventName, () => {
+			listenOnce(this, transitions.eventName, () => {
 				this.isOpen = true;
-				this.triggerEventListener('dialog:open');
+				triggerEvent(this, 'dialog:open');
 
 				// Find what we should focus
 				(this.querySelector('[autofocus]') || this.querySelector('.main') || this).focus();
@@ -54,11 +55,11 @@ class Dialog extends HTMLCustomElement.with(InitialRender) {
 
 		this.classList.remove('mara-dialog-visible');
 
-		this.addOnceEventListener(transitions.eventName, () => {
+		listenOnce(this, transitions.eventName, () => {
 			this.isOpen = false;
 			this.remove();
 
-			this.triggerEventListener('dialog:close');
+			triggerEvent(this, 'dialog:close');
 
 			if(this._previousFocus) {
 				this._previousFocus.focus();
@@ -70,11 +71,11 @@ class Dialog extends HTMLCustomElement.with(InitialRender) {
 	close() {
 		this.classList.remove('mara-dialog-visible');
 
-		this.addOnceEventListener(transitions.eventName, () => {
+		listenOnce(this, transitions.eventName, () => {
 			this.isOpen = false;
 			this.remove();
 
-			this.triggerEventListener('dialog:close');
+			triggerEvent(this, 'dialog:close');
 
 			if(this._previousFocus) {
 				this._previousFocus.focus();
