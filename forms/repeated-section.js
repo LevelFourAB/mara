@@ -50,14 +50,7 @@ export class RepeatedSection extends HTMLCustomElement.with(FormSection, DOMRead
 
 			child = next;
 		}
-
-		if(this.getAttribute('sortable') !== undefined) {
-			Sortable.create(this, {
-				draggable: 'mara-form-section',
-				handle: '.drag-handle'
-			});
-		}
-	};
+	}
 
 	get name() {
 		return this.getAttribute('name');
