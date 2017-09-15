@@ -61,5 +61,9 @@ export let DisableBehavior = Mixin(ParentClass => class extends ParentClass.with
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
+
+		if(this[disabledHandle]) {
+			this[disabledHandle].disengage();
+		}
 	}
 });
