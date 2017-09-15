@@ -7,7 +7,7 @@
     "ally.js": "^1.4.1",
     "dom4": "^1.8.5",
     "foibles": "^0.1.0",
-    "lodash": "^3.8.0"
+    "lodash.isfunction": "^3.0.8"
   },
   "devDependencies": {
     "eslint": "^4.6.1",

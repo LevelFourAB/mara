@@ -1,5 +1,5 @@
 'use strict';
-import isFunction from 'lodash/lang/isFunction';
+import isFunction from 'lodash.isfunction';
 
 export default function(selectorOrFunction) {
 	if(isFunction(selectorOrFunction)) {
