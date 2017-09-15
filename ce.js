@@ -15,6 +15,10 @@ export const define = window.customElements.define.bind(window.customElements);
  */
 function create(superclass) {
 	return toExtendable(class extends superclass {
+		static get observedAttributes() {
+			return [];
+		}
+
 		constructor(self) {
 			self = super(self);
 			self.createdCallback();
@@ -28,6 +32,9 @@ function create(superclass) {
 		}
 
 		createdCallback() {
+		}
+
+		attributeChangedCallback() {
 		}
 	});
 }
