@@ -78,6 +78,33 @@ define('test-element', class extends HTMLCustomElement.with(DOMReady) {
 });
 ```
 
+## Attributes
+
+A bit of extra care is needed to support `attributeChangedCallback`. When
+specifying attributes to observe either in an element or a mixin care
+is needed to fetch the attributes of the super class and to call the callback
+of the super class:
+
+```javascript
+class extends HTMLCustomElement.with(Mixin1, Mixin2) {
+	static get observedAttributes() {
+		// Be sure to combine own observed attributes with those of the super
+		return [ 'attribute1', ...super.observedAttributes ];
+	}
+
+	attributeChangedCallback(name, oldValue, newValue) {
+		// Call super to make sure super class can handle its attributes
+		super.attributeChangedCallback();
+
+		switch(name) {
+			case 'attribute1':
+				// Handle own attribute
+				break;
+		}
+	}
+}
+```
+
 ## Polyfills
 
 Dependening on your environment you might want to polyfill DOM4 support or
@@ -93,4 +120,31 @@ To include both standard and Custom Elements polyfills use:
 
 ```javascript
 import 'mara/polyfill/ce';
+```
+
+## Mixins
+
+Mixins contain limited functionality that can be composed together to help
+with implementation of a new custom element.
+
+```javascript
+import { Mixin } from 'mara/ce';
+
+export let CustomMixin = Mixin(superclass => class extends superclass {
+	// Callbacks and functions go here
+});
+```
+
+Mixins themselves can be composed with other mixins:
+
+```javascript
+import { Mixin, DOMReady } from 'mara/ce';
+
+export let CustomMixin = Mixin(superclass => class extends superclass.with(DOMReady) {
+	domReadyCallback() {
+		super.domReadyCallback();
+
+		// Some nifty code for the mixin
+	}
+});
 ```
