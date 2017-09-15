@@ -5,7 +5,7 @@ polyfilling future web standards such as [DOM4](http://www.w3.org/TR/2015/WD-dom
 and [Custom Elements](http://www.w3.org/TR/custom-elements/) and enhancing them
 with a few extra utilities.
 
-## Custom Element extensions
+## Custom Elements
 
 The base of Mara is a set of extensions for Custom Elements to make it easier
 to build both simple and advanced elements.
@@ -76,4 +76,21 @@ define('test-element', class extends HTMLCustomElement.with(DOMReady) {
 		...
 	}
 });
+```
+
+## Polyfills
+
+Dependening on your environment you might want to polyfill DOM4 support or
+Custom Element support.
+
+To import the standard polyfills, such as for DOM4 you can use:
+
+```javascript
+import 'mara/polyfill/standard';
+```
+
+To include both standard and Custom Elements polyfills use:
+
+```javascript
+import 'mara/polyfill/ce';
 ```

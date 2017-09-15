@@ -1,6 +1,0 @@
-{
-  "devel": true,
-  "browser": true,
-  "globalstrict": true,
-  "esnext": true
-}

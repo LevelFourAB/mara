@@ -3,9 +3,6 @@
 import maintainHidden from 'ally.js/maintain/hidden';
 import maintainDisabled from 'ally.js/maintain/disabled';
 
-let overlay;
-let overlayClick;
-
 let hidden;
 let disabled;
 
@@ -22,7 +19,6 @@ function recreate() {
 	if(top) {
 		document.documentElement.classList.add('mara-no-scroll');
 
-		const elements = active.map(item => item.element);
 		hidden = maintainHidden({
 			filter: top.element
 		});
@@ -32,7 +28,7 @@ function recreate() {
 		});
 
 		highestZ = 0;
-		active.forEach((item, idx) => {
+		active.forEach((item) => {
 			highestZ = Math.max(highestZ, item.zIndex + 1);
 		});
 	} else {

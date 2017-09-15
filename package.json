@@ -1,18 +1,15 @@
 {
   "name": "mara",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "license": "MIT",
   "dependencies": {
-    "@webcomponents/custom-elements": "^1.0.2",
+    "@webcomponents/custom-elements": "^1.0.4",
     "ally.js": "^1.4.1",
-    "dom4": "^1.8.3",
+    "dom4": "^1.8.5",
     "foibles": "^0.1.0",
     "lodash": "^3.8.0"
   },
-  "jspm": {
-    "jspmNodeConversion": false,
-    "main": "src",
-    "format": "es6",
-    "registry": "npm"
+  "devDependencies": {
+    "eslint": "^4.6.1"
   }
 }
