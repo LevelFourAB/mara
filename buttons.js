@@ -21,7 +21,7 @@ export let ButtonBehavior = Mixin(ParentClass => class extends ParentClass.with(
 		 * emits a press event.
 		 */
 		this.addEventListener('keypress', e => {
-			switch(e.code) {
+			switch(e.key) {
 				case 'Enter':
 				case 'Space':
 					e.preventDefault();
