@@ -1,11 +1,14 @@
 'use strict';
 
-import { Mixin, toExtendable } from 'foibles';
+import { Class as ClassMixin, Mixin, toExtendable } from 'foibles';
 
 /**
  * Export customElements.define as simply define.
  */
 export const define = window.customElements.define.bind(window.customElements);
+
+// Symbol used to mark the prototype
+const customElementMarker = Symbol('customElementMarker');
 
 /**
  * Create a class that extends the given superclass that fulfills the
@@ -13,8 +16,8 @@ export const define = window.customElements.define.bind(window.customElements);
  * init() method during creation.
  *
  */
-function create(superclass) {
-	return toExtendable(class extends superclass {
+function create(SuperClass) {
+	const customElement = class extends SuperClass {
 		static get observedAttributes() {
 			return [];
 		}
@@ -36,7 +39,9 @@ function create(superclass) {
 
 		attributeChangedCallback() {
 		}
-	});
+	};
+	customElement[customElementMarker] = true;
+	return toExtendable(customElement);
 }
 
 /**
@@ -78,7 +83,15 @@ export const InitialRender = Mixin(superclass => class extends superclass {
 	}
 });
 
+export function Class(func) {
+	if(func[customElementMarker]) {
+		return toExtendable(func);
+	}
+
+	return ClassMixin(HTMLCustomElement, func);
+}
+
 /**
- * Export Mixin for easily creating new behaviours without knowledge about mixwith.js
+ * Export Mixin and Class for easily creating new mixins.
  */
 export { Mixin };
