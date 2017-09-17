@@ -1,5 +1,5 @@
 
-import { Mixin, InitialRender } from './ce';
+import { Class, InitialRender } from './ce';
 import { triggerEvent } from './events';
 import { DisableBehavior } from './disabled';
 import { FocusableBehavior } from './focus';
@@ -9,7 +9,7 @@ import { FocusableBehavior } from './focus';
  * element to `button`, add support for disabling it and normalize the
  * keyboard behavior.
  */
-export let ButtonBehavior = Mixin(ParentClass => class extends ParentClass.with(DisableBehavior, FocusableBehavior, InitialRender) {
+export const ButtonBehavior = Class(ParentClass => class extends ParentClass.with(DisableBehavior, FocusableBehavior, InitialRender) {
 	initialRenderCallback() {
 		super.initialRenderCallback();
 
@@ -23,7 +23,7 @@ export let ButtonBehavior = Mixin(ParentClass => class extends ParentClass.with(
 		this.addEventListener('keypress', e => {
 			switch(e.key) {
 				case 'Enter':
-				case 'Space':
+				case ' ':
 					e.preventDefault();
 					if(! this.disabled) {
 						triggerEvent(this, 'click');
@@ -32,3 +32,5 @@ export let ButtonBehavior = Mixin(ParentClass => class extends ParentClass.with(
 		});
 	}
 });
+
+export const Button = ButtonBehavior;
