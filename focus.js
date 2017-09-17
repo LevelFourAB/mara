@@ -70,6 +70,7 @@ export let AutoFocusLockBehavior = Mixin(ParentClass => class extends ParentClas
 });
 
 
+const subtreeFocusActive = Symbol('subtreeFocusActive');
 const previousFocus = Symbol('previousFocus');
 export let SubtreeFocus = Mixin(ParentClass => class extends ParentClass {
 
@@ -82,20 +83,35 @@ export let SubtreeFocus = Mixin(ParentClass => class extends ParentClass {
 	createdCallback() {
 		super.createdCallback();
 
-		this.addEventListener('blur', e => {
-			if(! this.contains(e.target)) {
+		/*
+		 * Add a listener that disables the focus lock if the focus moves
+		 * outside the element.
+		 */
+		this.addEventListener('focusout', e => {
+			if(! this.contains(e.relatedTarget)) {
 				this[previousFocus] = null;
+
+				if(this.focusLocked) {
+					this.focusLocked = false;
+				}
+			}
+		});
+
+		/*
+		 * Add a listener that enables the focus lock if the focus moves
+		 * inside the element.
+		 */
+		this.addEventListener('focusin', () => {
+			if(this[subtreeFocusActive] && FocusLocking.isInstance(this)) {
+				// Activate the focus lock if supported
+				this.focusLocked = true;
 			}
 		});
 	}
 
 	focusSubtree() {
 		this[previousFocus] = document.activeElement;
-
-		if(FocusLocking.isInstance(this)) {
-			// Activate the focus lock if supported
-			this.focusLocked = true;
-		}
+		this[subtreeFocusActive] = true;
 
 		let target = this.firstTabbableChild;
 		if(target) {
@@ -106,8 +122,9 @@ export let SubtreeFocus = Mixin(ParentClass => class extends ParentClass {
 	releaseFocus() {
 		const previous = this[previousFocus];
 		this[previousFocus] = null;
+		this[subtreeFocusActive] = false;
 
-		if(FocusLocking.isInstance(this)) {
+		if(this.focusLocked) {
 			// Deactivate the focus lock if previously activated
 			this.focusLocked = false;
 		}
