@@ -4,6 +4,8 @@
   "license": "MIT",
   "dependencies": {
     "@webcomponents/custom-elements": "^1.0.4",
+    "@webcomponents/shadycss": "^1.0.5",
+    "@webcomponents/shadydom": "^1.0.4",
     "ally.js": "^1.4.1",
     "dom4": "^1.8.5",
     "foibles": "^0.2.0",
