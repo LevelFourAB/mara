@@ -1,6 +1,6 @@
 {
   "name": "mara",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "dependencies": {
     "@webcomponents/custom-elements": "^1.0.4",
