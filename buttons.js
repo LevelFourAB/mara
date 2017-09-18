@@ -34,3 +34,27 @@ export const ButtonBehavior = Class(ParentClass => class extends ParentClass.wit
 });
 
 export const Button = ButtonBehavior;
+
+/**
+ * Button that acts as a submit button by creating a hidden button that
+ * performs the actual form submission.
+ */
+export const SubmitButton = Class(ParentClass => class extends ParentClass.with(ButtonBehavior) {
+	initialRenderCallback() {
+		super.initialRenderCallback();
+
+		this.button = document.createElement('button');
+		this.button.setAttribute('hidden', '');
+		this.appendChild(this.button);
+
+		this.addEventListener('click', function(e) {
+			if(e.target != this.button) {
+				this.submitCallback();
+			}
+		});
+	}
+
+	submitCallback() {
+		this.button.click();
+	}
+});
