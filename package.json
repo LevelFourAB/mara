@@ -2,6 +2,13 @@
   "name": "mara",
   "version": "0.3.0",
   "license": "MIT",
+  "description": "Base class, mixins and behaviors for Custom Elements and Web Components",
+  "repository": "LevelFourAB/mara",
+  "keywords": [
+    "custom elements",
+    "web components",
+    "shadow dom"
+  ],
   "dependencies": {
     "@webcomponents/custom-elements": "^1.0.4",
     "@webcomponents/shadycss": "^1.0.5",
