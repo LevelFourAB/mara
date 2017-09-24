@@ -14,14 +14,14 @@ Mara provides `HTMLCustomElement` which can be used as a base for elements:
 import { HTMLCustomElement, define } from 'mara';
 
 define('test-element', class extends HTMLCustomElement {
-	createdCallback() {
-		// This callback is invoked when the element is constructed
+  createdCallback() {
+    // This callback is invoked when the element is constructed
 
-		// Make sure to always call the super-method of callbacks
-		super.createdCallback();
+    // Make sure to always call the super-method of callbacks
+    super.createdCallback();
 
-		...
-	}
+    ...
+  }
 });
 ```
 
@@ -40,21 +40,21 @@ of the super class:
 
 ```javascript
 class extends HTMLCustomElement.with(Mixin1, Mixin2) {
-	static get observedAttributes() {
-		// Be sure to combine own observed attributes with those of the super
-		return [ 'attribute1', ...super.observedAttributes ];
-	}
+  static get observedAttributes() {
+    // Be sure to combine own observed attributes with those of the super
+    return [ 'attribute1', ...super.observedAttributes ];
+  }
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		// Call super to make sure super class can handle its attributes
-		super.attributeChangedCallback();
+  attributeChangedCallback(name, oldValue, newValue) {
+    // Call super to make sure super class can handle its attributes
+    super.attributeChangedCallback();
 
-		switch(name) {
-			case 'attribute1':
-				// Handle own attribute
-				break;
-		}
-	}
+    switch(name) {
+      case 'attribute1':
+        // Handle own attribute
+        break;
+    }
+  }
 }
 ```
 
@@ -74,14 +74,14 @@ The mixin `InitialRender` provides a callback that will only be called once:
 import { HTMLCustomElement, InitialRender, define } from 'mara';
 
 define('test-element', class extends HTMLCustomElement.with(InitialRender) {
-	initialRenderCallback() {
-		// This is called when we are first connected to the DOM
+  initialRenderCallback() {
+    // This is called when we are first connected to the DOM
 
-		// Make sure to always call the super-method of callbacks
-		super.initialRenderCallback();
+    // Make sure to always call the super-method of callbacks
+    super.initialRenderCallback();
 
-		...
-	}
+    ...
+  }
 });
 ```
 
@@ -94,14 +94,14 @@ to get a callback when the children are available.
 import { HTMLCustomElement, ChildrenReady, define } from 'mara';
 
 define('test-element', class extends HTMLCustomElement.with(ChildrenReady) {
-	childrenReadyCallback() {
-		// This is called when the children of the element are available
+  childrenReadyCallback() {
+    // This is called when the children of the element are available
 
-		// Make sure to always call the super-method of callbacks
-		super.childrenReadyCallback();
+    // Make sure to always call the super-method of callbacks
+    super.childrenReadyCallback();
 
-		...
-	}
+    ...
+  }
 });
 ```
 
@@ -117,18 +117,18 @@ the `Template` mixin:
 import { HTMLCustomElement, Template, define } from 'mara';
 
 define('test-element', class extends HTMLCustomElement.with(Template) {
-	static get templateHTML() {
-		return `<h1>Template HTML goes here</h1>
+  static get templateHTML() {
+    return `<h1>Template HTML goes here</h1>
 
-		<div><slot></slot></div>
-		`;
-	}
+    <div><slot></slot></div>
+    `;
+  }
 
-	createdCallback() {
-		super.createdCallback();
-		
-		// this.shadowRoot is initialized from the static template
-	}
+  createdCallback() {
+    super.createdCallback();
+    
+    // this.shadowRoot is initialized from the static template
+  }
 });
 ```
 
@@ -141,11 +141,11 @@ handling the `ShadowDOM` mixin will create a shadow root that can be used:
 import { HTMLCustomElement, ShadowDOM, define } from 'mara';
 
 define('test-element', class extends HTMLCustomElement.with(ShadowDOM) {
-	createdCallback() {
-		super.createdCallback();
-		
-		// this.shadowRoot is available here
-	}
+  createdCallback() {
+    super.createdCallback();
+    
+    // this.shadowRoot is available here
+  }
 });
 ```
 
@@ -187,7 +187,7 @@ with implementation of a new custom element.
 import { Mixin } from 'mara';
 
 export let CustomMixin = Mixin(superclass => class extends superclass {
-	// Callbacks and functions go here
+  // Callbacks and functions go here
 });
 ```
 
@@ -197,11 +197,11 @@ Mixins themselves can be composed with other mixins:
 import { Mixin, ChildrenReady } from 'mara';
 
 export let CustomMixin = Mixin(superclass => class extends superclass.with(ChildrenReady) {
-	childrenReadyCallback() {
-		super.childrenReadyCallback();
+  childrenReadyCallback() {
+    super.childrenReadyCallback();
 
-		// Some nifty code for the mixin
-	}
+    // Some nifty code for the mixin
+  }
 });
 ```
 
@@ -221,7 +221,7 @@ use and from keyboard use.
 import { DisableBehavior /* or DisableSubtreeBehavior */ } from 'mara/disabled';
 
 define('test-element', class extends HTMLCustomElement.with(DisableBehavior) {
-	...
+  ...
 });
 ```
 
@@ -246,7 +246,7 @@ via keyboard and clicks:
 import { FocusableBehavior } from 'mara/focus';
 
 define('test-element', class extends HTMLCustomElement.with(FocusableBehavior) {
-	...
+  ...
 })
 ```
 
@@ -261,7 +261,7 @@ the element.
 import { FocusLocking } from 'mara/focus';
 
 define('test-element', class extends HTMLCustomElement.with(FocusLocking) {
-	...
+  ...
 })
 ```
 
@@ -279,7 +279,7 @@ for also focusing the first focusable child in the element.
 import { SubtreeFocus } from 'mara/focus';
 
 define('test-element', class extends HTMLCustomElement.with(SubtreeFocus) {
-	...
+  ...
 })
 ```
 
@@ -323,14 +323,14 @@ is needed to make forms submittable via keyboard as with a regular `<button>`.
 import { SubmitButton } from 'mara/buttons';
 
 define('custom-submit', class extends SubmitButton {
-	...
+  ...
 
-	submitCallback() {
-		// Called when button is invoked, can be used to set custom input values
+  submitCallback() {
+    // Called when button is invoked, can be used to set custom input values
 
-		// Call super to actually submit form
-		super.submitCallback();
-	}
+    // Call super to actually submit form
+    super.submitCallback();
+  }
 });
 ```
 
@@ -344,25 +344,25 @@ import { ModalDialog } from 'mara/dialogs';
 
 define('custom-dialog', class extends ModalDialog {
 
-	dialogOpenCallback() {
-		// Call super to allow dialog to open
-		super.dialogOpenCallback();
-		
-		// Do some extra stuff for dialog here
-	}
+  dialogOpenCallback() {
+    // Call super to allow dialog to open
+    super.dialogOpenCallback();
+    
+    // Do some extra stuff for dialog here
+  }
 
-	dialogCloseCallback() {
-		// Do some extra close stuff here
+  dialogCloseCallback() {
+    // Do some extra close stuff here
 
-		// Continue to close dialog
-		super.dialogCloseCallback();
-	}
+    // Continue to close dialog
+    super.dialogCloseCallback();
+  }
 
-	dialogDefaultCloseCallback() {
+  dialogDefaultCloseCallback() {
 
-		// Call super to allow the dialog to be closed via default action
-		super.dialogDefaultCloseCallback();
-	}
+    // Call super to allow the dialog to be closed via default action
+    super.dialogDefaultCloseCallback();
+  }
 });
 ```
 
