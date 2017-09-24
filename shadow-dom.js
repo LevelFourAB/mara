@@ -1,4 +1,4 @@
-import { Mixin } from './ce';
+import { Mixin } from './api';
 
 /**
  * Mixin that attaches a shadow root to the element.

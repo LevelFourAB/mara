@@ -1,5 +1,6 @@
 
-import { Class, InitialRender } from './ce';
+import { Class } from './api';
+import { InitialRender } from './initial-render';
 import { triggerEvent } from './events';
 import { DisableBehavior } from './disabled';
 import { FocusableBehavior } from './focus';
@@ -9,7 +10,7 @@ import { FocusableBehavior } from './focus';
  * element to `button`, add support for disabling it and normalize the
  * keyboard behavior.
  */
-export const ButtonBehavior = Class(ParentClass => class extends ParentClass.with(DisableBehavior, FocusableBehavior, InitialRender) {
+export const ButtonBehavior = Class(ParentClass => class extends ParentClass.with(FocusableBehavior, DisableBehavior, InitialRender) {
 	initialRenderCallback() {
 		super.initialRenderCallback();
 

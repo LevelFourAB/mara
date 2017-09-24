@@ -1,7 +1,9 @@
 
-import { Mixin, InitialRender } from './ce';
 import maintainTabFocus from 'ally.js/maintain/tab-focus';
 import firstTabbable from 'ally.js/query/first-tabbable';
+
+import { Mixin } from './api';
+import { InitialRender } from './initial-render';
 
 /**
  * Behavior that enhances an element with focus.
@@ -109,7 +111,7 @@ export let SubtreeFocus = Mixin(ParentClass => class extends ParentClass {
 		});
 	}
 
-	focusSubtree() {
+	grabFocus() {
 		this[previousFocus] = document.activeElement;
 		this[subtreeFocusActive] = true;
 

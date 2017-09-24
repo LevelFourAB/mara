@@ -1,22 +1,8 @@
 
-import { Class, InitialRender } from './ce';
+import { Class } from './api';
+import { InitialRender } from './initial-render';
 import { FocusLocking, SubtreeFocus } from './focus';
 import stack from './page-stack';
-
-/**
- * Symbol used for function called when a dialog is opened.
- */
-export const open = Symbol('open');
-
-/**
- * Symbol used for a function called when a dialog is closed.
- */
-export const close = Symbol('close');
-
-/**
- * Symbol used for when the default close action for a dialog is invoked.
- */
-export const defaultClose = Symbol('defaultClose');
 
 /**
  * Dialog class and mixin. Provides an API similiar to the `<dialog>` element
@@ -50,10 +36,10 @@ export const Dialog = Class(ParentClass => class extends ParentClass
 			case 'open':
 				if(newValue !== null) {
 					if(oldValue === null) {
-						this[open]();
+						this.dialogOpenCallback();
 					}
 				} else {
-					this[close]();
+					this.dialogCloseCallback();
 				}
 				break;
 		}
@@ -68,7 +54,7 @@ export const Dialog = Class(ParentClass => class extends ParentClass
 		// Add listener to handle closing on escape
 		this.addEventListener('keyup', e => {
 			if(e.key === 'Escape') {
-				this[defaultClose]();
+				this.close({ default: true });
 			}
 		});
 	}
@@ -77,11 +63,16 @@ export const Dialog = Class(ParentClass => class extends ParentClass
 		super.disconnectedCallback();
 
 		if(this.open) {
-			this[close]();
+			this.dialogCloseCallback();
 		}
 	}
 
-	close() {
+	close(options = {}) {
+		if(options.default) {
+			this.dialogDefaultCloseCallback();
+			return;
+		}
+
 		this.open = false;
 	}
 
@@ -89,15 +80,15 @@ export const Dialog = Class(ParentClass => class extends ParentClass
 		this.open = true;
 	}
 
-	[open]() {
-		this.focusSubtree();
+	dialogOpenCallback() {
+		this.grabFocus();
 	}
 
-	[close]() {
+	dialogCloseCallback() {
 		this.releaseFocus();
 	}
 
-	[defaultClose]() {
+	dialogDefaultCloseCallback() {
 		this.close();
 	}
 });
@@ -109,15 +100,17 @@ export const ModalDialog = Class(ParentClass => class extends ParentClass.with(D
 		this.setAttribute('aria-modal', 'true');
 	}
 
-	[open]() {
-		super[open]();
+	dialogOpenCallback() {
+		super.dialogOpenCallback();
 
-		stack.show(this, this[defaultClose].bind(this));
+		stack.show(this, () => {
+			this.close({ default: true });
+		});
 	}
 
-	[close]() {
+	dialogCloseCallback() {
 		stack.hide(this);
 
-		super[close]();
+		super.dialogCloseCallback();
 	}
 });

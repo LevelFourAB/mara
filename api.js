@@ -45,44 +45,18 @@ function create(SuperClass) {
 }
 
 /**
- * Export HTMLCustomElement.
+ * HTMLCustomElement that is used for custom elements.
  */
 export let HTMLCustomElement = create(HTMLElement);
 
+
 /**
- * Behaviour that adds domReadyCallback that is called when the contents of
- * the element is ready.
+ * Create a class on top of HTMLCustomElement that can also be used as a
+ * mixin.
  *
- * Uses setTimeout right now, but that might not be the best way to do this.
+ * @param {function} func
+ *   mixin function
  */
-export const DOMReady = Mixin(superclass => class extends superclass {
-	connectedCallback() {
-		super.connectedCallback();
-		setTimeout(() => this.domReadyCallback(), 0);
-	}
-
-	domReadyCallback() {
-	}
-});
-
-/**
- * Behaviour that adds a hook for performing initial rendering when the
- * element is first connected to the DOM.
- */
-const hasBeenRendered = Symbol('hasBeenRendered');
-export const InitialRender = Mixin(superclass => class extends superclass {
-	connectedCallback() {
-		super.connectedCallback();
-		if(! this[hasBeenRendered]) {
-			this[hasBeenRendered] = true;
-			this.initialRenderCallback();
-		}
-	}
-
-	initialRenderCallback() {
-	}
-});
-
 export function Class(func) {
 	if(func[customElementMarker]) {
 		return toExtendable(func);
@@ -92,6 +66,6 @@ export function Class(func) {
 }
 
 /**
- * Export Mixin and Class for easily creating new mixins.
+ * Mixin for creating mixins that can applied to HTMLCustomElement.
  */
 export { Mixin };

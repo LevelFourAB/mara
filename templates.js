@@ -1,5 +1,4 @@
-import { Mixin } from './ce';
-
+import { Mixin } from './api';
 import { ShadowDOM } from './shadow-dom';
 
 /*

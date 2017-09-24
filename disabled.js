@@ -1,7 +1,9 @@
 
 import maintainDisabled from 'ally.js/maintain/disabled';
 import disabled from 'ally.js/element/disabled';
-import { Mixin, InitialRender } from './ce';
+
+import { Mixin } from './api';
+import { InitialRender } from './initial-render';
 
 const disabledHandle = Symbol('disabledHandle');
 
