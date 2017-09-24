@@ -1,6 +1,6 @@
 {
   "name": "mara",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "license": "MIT",
   "description": "Base class, mixins and behaviors for Custom Elements and Web Components",
   "repository": "LevelFourAB/mara",
