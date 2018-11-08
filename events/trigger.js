@@ -7,5 +7,5 @@ export default function(el, eventName, data) {
 		detail: data
 	});
 
-	el.dispatchEvent(event);
+	return el.dispatchEvent(event);
 }
